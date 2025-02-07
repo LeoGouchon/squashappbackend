@@ -1,0 +1,13 @@
+package com.leogouchon.squashapp;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SquashappApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SquashappApplication.class, args);
+    }
+
+}
