@@ -33,7 +33,8 @@ public class Match {
     @JoinColumn(name = "playerB_id", referencedColumnName = "id")
     private Player playerB;
 
-    public Match() {
+    @Deprecated
+    protected Match() {
     }
 
     public Match(Player playerA, Player playerB) {
@@ -43,13 +44,25 @@ public class Match {
         this.playerA = playerA;
         this.playerB = playerB;
         this.pointsHistory = "";
+        this.startTime = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Match(Player playerA, Player playerB, String pointsHistory) {
+        this(playerA, playerB);
+        this.pointsHistory = pointsHistory;
+        this.isFinished();
+        if (!this.isFinished()) {
+            throw new RuntimeException("Match must be finished to create it with final score");
+        }
     }
 
     public Match(Player playerA, Player playerB, Integer finalScoreA, Integer finalScoreB) {
         this(playerA, playerB);
         this.finalScoreA = finalScoreA;
         this.finalScoreB = finalScoreB;
-        this.startTime = new Timestamp(System.currentTimeMillis());
+        if (!this.isFinished()) {
+            throw new RuntimeException("Match must be finished to create it with final score");
+        }
     }
 
 
@@ -74,14 +87,18 @@ public class Match {
      * @return the number of points the player has scored
      */
     private Integer getPlayerScore(Player player) {
+        PlayerLetter playerLetter = Match.PlayerLetter.valueOf(player.equals(playerA) ? "A" : "B");
+        Integer finalScore = playerLetter == Match.PlayerLetter.A ? getFinalScoreA() : getFinalScoreB();
+        if (finalScore != null) {
+            return finalScore;
+        }
         if (Objects.equals(pointsHistory, "")) {
             return 0;
         }
         String[] points = pointsHistory.split(";");
-        PlayerLetter PlayerLetter = Match.PlayerLetter.valueOf(player.equals(playerA) ? "A" : "B");
 
         return Arrays.stream(points)
-                .filter(point -> point.startsWith(String.valueOf(PlayerLetter)))
+                .filter(point -> point.startsWith(String.valueOf(playerLetter)))
                 .reduce((first, second) -> second)
                 .map(point -> point.replaceAll("([A-Z])", ""))
                 .map(Integer::valueOf)
@@ -145,6 +162,10 @@ public class Match {
             throw new RuntimeException("Player not in the party");
         }
 
+        if (isFinished()) {
+            throw new RuntimeException("Match is already finished");
+        }
+
         if (!isServiceSideCorrect(player, ServiceSide.valueOf(serviceSide))) {
             throw new RuntimeException("Invalid service side");
         }
@@ -152,7 +173,6 @@ public class Match {
         PlayerLetter PlayerLetter = Match.PlayerLetter.valueOf(player.equals(playerA) ? "A" : "B");
 
         if (Objects.equals(pointsHistory, "")) {
-            startTime = new Timestamp(System.currentTimeMillis());
             pointsHistory += PlayerLetter + "0" + serviceSide + ";";
             return;
         }
@@ -177,7 +197,8 @@ public class Match {
             finalScoreB = getPlayerScore(playerB);
             endTime = new Timestamp(System.currentTimeMillis());
             return true;
-        } else return finalScoreA != null && finalScoreB != null;
+        }
+        return false;
     }
 
     private enum PlayerLetter {

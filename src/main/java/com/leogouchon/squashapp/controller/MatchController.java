@@ -1,5 +1,6 @@
 package com.leogouchon.squashapp.controller;
 
+import com.leogouchon.squashapp.dto.MatchRequestDTO;
 import com.leogouchon.squashapp.enums.ServiceSide;
 import com.leogouchon.squashapp.model.Match;
 import com.leogouchon.squashapp.model.Player;
@@ -31,8 +32,14 @@ public class MatchController {
     }
 
     @PostMapping
-    public ResponseEntity<Match> createMatch(@RequestParam Long playerAId, @RequestParam Long playerBId) {
-        Match createdMatch = matchService.createMatch(playerAId, playerBId);
+    public ResponseEntity<Match> createMatch(@RequestBody MatchRequestDTO matchRequest) {
+        Match createdMatch = matchService.createMatch(
+                matchRequest.getPlayerAId(),
+                matchRequest.getPlayerBId(),
+                matchRequest.getPointsHistory(),
+                matchRequest.getFinalScoreA(),
+                matchRequest.getFinalScoreB()
+        );
         return ResponseEntity.ok(createdMatch);
     }
 

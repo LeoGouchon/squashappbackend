@@ -27,6 +27,9 @@ public class PlayerService {
     }
 
     public Player createPlayer(Player player) {
+        if (player.getFirstname() == null || player.getLastname() == null) {
+            throw new RuntimeException("Firstname and lastname must not be null");
+        }
         return playerRepository.save(player);
     }
 

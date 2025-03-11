@@ -21,14 +21,21 @@ public class MatchService {
         this.playerService = playerService;
     }
 
-    public Match createMatch(Long player1Id, Long player2Id) {
+    public Match createMatch(Long player1Id, Long player2Id, String pointsHistory, Integer finalScoreA, Integer finalScoreB) {
         Optional<Player> playerA = playerService.getPlayer(player1Id);
         Optional<Player> playerB = playerService.getPlayer(player2Id);
         if (playerA.isEmpty() || playerB.isEmpty()) {
             throw new RuntimeException("Player not found");
         } else {
+            if (pointsHistory != null) {
+                Match match = new Match(playerA.get(), playerB.get(), pointsHistory);
+                return matchRepository.save(match);
+            }
+            else if (finalScoreA != null && finalScoreB != null) {
+                Match match = new Match(playerA.get(), playerB.get(), finalScoreA, finalScoreB);
+                return matchRepository.save(match);
+            }
             Match match = new Match(playerA.get(), playerB.get());
-            System.out.println(match);
             return matchRepository.save(match);
         }
     }
@@ -36,9 +43,6 @@ public class MatchService {
     public String addPoint(Match match, Player player, String serviceSide) {
         if (match == null) {
             throw new RuntimeException("Match not found");
-        }
-        if (match.isFinished()) {
-            throw new RuntimeException("Match is already finished");
         }
         match.addService(player, serviceSide);
         matchRepository.save(match);

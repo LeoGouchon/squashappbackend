@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @Entity
@@ -17,12 +19,12 @@ public class Player {
     private String firstname;
     private String lastname;
 
-    public Player () {
-    }
+    @Deprecated
+    protected Player () {}
 
     public Player(String firstname, String lastname) {
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstname = Objects.requireNonNull(firstname, "Firstname must not be null");
+        this.lastname = Objects.requireNonNull(lastname, "Lastname must not be null");
     }
 
 }
