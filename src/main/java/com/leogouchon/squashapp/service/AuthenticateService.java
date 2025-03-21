@@ -13,16 +13,14 @@ public class AuthenticateService {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
 
     public AuthenticateService(UserService userService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
     }
 
     public String login(AuthenticateRequestDTO user) {
-        Users existingUsers = userService.getUserByUsername(user.getUsername());
+        Users existingUsers = userService.getUserByEmail(user.getEmail());
         if (existingUsers == null || !matchPassword(existingUsers, user.getPassword())) {
             throw new RuntimeException("Bad credentials");
         }

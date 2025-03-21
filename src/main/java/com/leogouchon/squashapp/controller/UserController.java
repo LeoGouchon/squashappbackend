@@ -28,14 +28,17 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<Users> getUserByUsername(@PathVariable String username) {
-        Users users = userService.getUserByUsername(username);
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+        Users users = userService.getUserByEmail(email);
         return ResponseEntity.ok(users);
     }
 
     @PostMapping
     public ResponseEntity<Users> createUser(@RequestBody Users users) {
+        if (!users.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            return ResponseEntity.badRequest().body(null);
+        }
         Users createdUsers = userService.createUser(users);
         return ResponseEntity.ok(createdUsers);
     }
