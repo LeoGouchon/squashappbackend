@@ -1,0 +1,55 @@
+package com.leogouchon.squashapp.controller;
+
+import com.leogouchon.squashapp.model.Users;
+import com.leogouchon.squashapp.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<Users>> getUsers() {
+        List<Users> users = userService.getUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Users> getUserById(@PathVariable Long id) {
+        Optional<Users> user = Optional.ofNullable(userService.getUserById(id));
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Users> getUserByUsername(@PathVariable String username) {
+        Users users = userService.getUserByUsername(username);
+        return ResponseEntity.ok(users);
+    }
+
+    @PostMapping
+    public ResponseEntity<Users> createUser(@RequestBody Users users) {
+        Users createdUsers = userService.createUser(users);
+        return ResponseEntity.ok(createdUsers);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Users> updateUser(@PathVariable Long id, @RequestBody Users users) {
+        users.setId(id);
+        Users updatedUsers = userService.updateUser(users);
+        return ResponseEntity.ok(updatedUsers);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+}
