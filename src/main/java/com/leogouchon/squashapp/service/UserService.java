@@ -30,7 +30,7 @@ public class UserService {
         return userRepository.findByEmail(username).orElse(null);
     }
 
-    protected Users getUserByToken(String token) {
+    public Users getUserByToken(String token) {
         return userRepository.findByToken(token).orElse(null);
     }
 

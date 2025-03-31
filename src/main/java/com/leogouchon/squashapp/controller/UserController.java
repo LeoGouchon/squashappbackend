@@ -34,6 +34,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/token/{token}")
+    public ResponseEntity<Users> getUserByToken(@PathVariable String token) {
+        Users users = userService.getUserByToken(token);
+        return ResponseEntity.ok(users);
+    }
+
     @PostMapping
     public ResponseEntity<Users> createUser(@RequestBody Users users) {
         if (!users.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {

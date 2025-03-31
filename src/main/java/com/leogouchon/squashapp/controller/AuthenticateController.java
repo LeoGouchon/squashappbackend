@@ -2,6 +2,7 @@ package com.leogouchon.squashapp.controller;
 
 import ch.qos.logback.classic.encoder.JsonEncoder;
 import com.leogouchon.squashapp.dto.AuthenticateRequestDTO;
+import com.leogouchon.squashapp.dto.TokenResponseDTO;
 import com.leogouchon.squashapp.model.Users;
 import com.leogouchon.squashapp.service.AuthenticateService;
 import com.leogouchon.squashapp.service.UserService;
@@ -33,9 +34,15 @@ public class AuthenticateController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody String token) {
-        authenticateService.logout(token);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> logout(@RequestBody TokenResponseDTO tokenResponseDTO) {
+        try {
+            String token = tokenResponseDTO.getToken();
+            authenticateService.logout(token);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/signup")
