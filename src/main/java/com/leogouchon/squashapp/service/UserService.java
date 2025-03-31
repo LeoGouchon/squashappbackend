@@ -27,15 +27,15 @@ public class UserService {
     }
 
     public Users getUserByEmail(String username) {
-        return userRepository.findByEmail(username).orElseThrow();
+        return userRepository.findByEmail(username).orElse(null);
     }
 
     protected Users getUserByToken(String token) {
-        return userRepository.findByToken(token).orElseThrow();
+        return userRepository.findByToken(token).orElse(null);
     }
 
     public Users getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElse(null);
     }
 
     public Users updateUser(Users users) {
@@ -51,6 +51,10 @@ public class UserService {
 
     public List<Users> getUsers() {
         return userRepository.findAll();
+    }
+
+    public List<Users> getUsersWithLinkedPlayer() {
+        return userRepository.findByPlayerIsNotNull();
     }
 
     public void updateTokenUser(Users user) {

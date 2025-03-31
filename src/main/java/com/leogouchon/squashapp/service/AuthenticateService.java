@@ -13,16 +13,18 @@ public class AuthenticateService {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     public AuthenticateService(UserService userService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public String login(AuthenticateRequestDTO user) {
         Users existingUsers = userService.getUserByEmail(user.getEmail());
         if (existingUsers == null || !matchPassword(existingUsers, user.getPassword())) {
-            throw new RuntimeException("Bad credentials");
+            return null;
         }
         String token = generateToken(existingUsers);
         userService.updateTokenUser(existingUsers);
@@ -50,10 +52,10 @@ public class AuthenticateService {
     public String generateToken(Users user) {
         String token = UUID.randomUUID().toString();
         user.setToken(token);
-        return token;
+        return userRepository.save(user).getToken();
     }
 
-    public boolean matchPassword(Users existingUsers, String password) {
-        return passwordEncoder.matches(password, existingUsers.getPassword());
+    public boolean matchPassword(Users existingUsers, String unhashedPassword) {
+        return passwordEncoder.matches(unhashedPassword, existingUsers.getPassword());
     }
 }

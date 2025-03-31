@@ -39,4 +39,10 @@ public class PlayerController {
         playerService.deletePlayer(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/unlinked")
+    public ResponseEntity<List<Player>> getUnassociatedPlayers() {
+        List<Player> unassociatedPlayers = playerService.getUnassociatedPlayers();
+        return ResponseEntity.ok(unassociatedPlayers);
+    }
 }

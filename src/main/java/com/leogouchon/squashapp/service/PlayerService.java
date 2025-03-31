@@ -1,6 +1,7 @@
 package com.leogouchon.squashapp.service;
 
 import com.leogouchon.squashapp.model.Player;
+import com.leogouchon.squashapp.model.Users;
 import com.leogouchon.squashapp.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,15 @@ import java.util.Optional;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final UserService userService;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(
+            PlayerRepository playerRepository,
+            UserService userService
+    ) {
         this.playerRepository = playerRepository;
+        this.userService = userService;
     }
 
     public List<Player> getPlayers() {
@@ -39,5 +45,13 @@ public class PlayerService {
         } else {
             throw new RuntimeException("Player not found with id: " + id);
         }
+    }
+
+    public List<Player> getUnassociatedPlayers() {
+        List<Player> players = getPlayers();
+        List<Users> users = userService.getUsersWithLinkedPlayer();
+        List<Long> alreadyLinkedPlayerIds = users.stream().map(u -> u.getPlayer().getId()).toList();
+        players.removeIf(p -> alreadyLinkedPlayerIds.contains(p.getId()));
+        return players;
     }
 }

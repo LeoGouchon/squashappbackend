@@ -22,4 +22,15 @@ public class Users {
     @OneToOne
     @JoinColumn(name = "players_id", unique = true)
     private Player player;
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", token='" + token + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", player=" + (player != null ? player.getId() : "null") +
+                '}';
+    }
 }

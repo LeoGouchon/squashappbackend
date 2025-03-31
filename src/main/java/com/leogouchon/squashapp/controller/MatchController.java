@@ -33,6 +33,7 @@ public class MatchController {
 
     @PostMapping
     public ResponseEntity<Match> createMatch(@RequestBody MatchRequestDTO matchRequest) {
+        System.out.println("POST MAPPING CREATE MATCH");
         Match createdMatch = matchService.createMatch(
                 matchRequest.getPlayerAId(),
                 matchRequest.getPlayerBId(),
